@@ -6,9 +6,12 @@ How to use IIO driver for HX711 on Raspberry PI (tested on RPI Zero).
 
 ### Useful references
 
-https://forums.raspberrypi.com/viewtopic.php?t=252784
-https://gist.github.com/adrianlzt/6e927eb83b405f09d89624150e1d4d35
-https://github.com/raspberrypi/firmware/blob/master/boot/overlays/README
+[Raspberry Pi Documentation - Device Tree overlays](https://www.raspberrypi.com/documentation/computers/configuration.html#device-tree-overlays)
+[Overlays README](https://github.com/raspberrypi/firmware/blob/master/boot/overlays/README)
+
+[HX711 DT overlay (link 1)](https://gist.github.com/adrianlzt/6e927eb83b405f09d89624150e1d4d35)
+[HX711 DT overlay (link 2)](https://raspberrypi.stackexchange.com/questions/103984/trouble-adding-a-gpio-device-to-the-device-tree/109715#109715)
+
 
 ### Build DT overlay
 
@@ -22,15 +25,11 @@ and then copy to `/boot/overlays/`
 
 ### Use hx711 overlay
 
-Edit `/boot/config.txt`, add to the part where are other overlay examples new line:
+Edit `/boot/config.txt`, add to the part where are other overlay examples new line (adjust `sckpin` and `doutpin` values to your HW setup):
 
 ```bash
-dtoverlay=hx711
+dtoverlay=hx711,sckpin=23,doutpin=24
 ```
-
-### TODO
-
-Make GPIO pins confiurable (now hardcoded to 23 and 24).
 
 ## HX711 IIO driver
 
@@ -38,7 +37,7 @@ Unfortunately raspbian does not supply all the IIO kenrel drivers so we need to 
 
 Best is to crosscompile on another computer (e.g. Linux, WSL2, ...) 
 
-Use the offcicial guide https://www.raspberrypi.com/documentation/computers/linux_kernel.html#cross-compiling-the-kernel with following changes:
+Use the offcicial guide [Raspberry Pi Documentation - Cross-compiling the kernel](https://www.raspberrypi.com/documentation/computers/linux_kernel.html#cross-compiling-the-kernel) with following changes:
 
 - determine your exact current kernel version
 - find out the commit/tag
@@ -102,4 +101,4 @@ cat /dev/iio\:device0 | hexdump
 
 Now the application can read this file without worrying about timing.
 Another advantage is that the timing is pretty accurate and with minimal system performance impact.
-For details about the format see https://dri.freedesktop.org/docs/drm/iio/iio_devbuf.html
+For details about the format see [Industrial IIO device buffers](https://dri.freedesktop.org/docs/drm/iio/iio_devbuf.html)
