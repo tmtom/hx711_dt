@@ -102,3 +102,24 @@ cat /dev/iio\:device0 | hexdump
 Now the application can read this file without worrying about timing.
 Another advantage is that the timing is pretty accurate and with minimal system performance impact.
 For details about the format see [Industrial IIO device buffers](https://dri.freedesktop.org/docs/drm/iio/iio_devbuf.html)
+
+### Persist sysfs settings over boot
+
+Unfortunately `sysfsutils` does not support dir create so will use [tmpfiles](https://manpages.ubuntu.com/manpages/bionic/man5/tmpfiles.d.5.html) instead.
+
+Create file `/etc/tmpfiles.d/sysfs-hx711.conf` with following content:
+```bash
+#Type Path                                                     Mode UID  GID  Age Argument
+d     /sys/kernel/config/iio/triggers/hrtimer/hx_sample        0755 root root
+w     /sys/bus/iio/devices/trigger0/sampling_frequency         -    -    -    -   10.0
+w     /sys/bus/iio/devices/iio:device0/buffer0/in_timestamp_en -    -    -    -   1
+w     /sys/bus/iio/devices/iio:device0/buffer0/in_voltage0_en  -    -    -    -   1
+w     /sys/bus/iio/devices/iio:device0/buffer0/length          -    -    -    -   1024
+w     /sys/bus/iio/devices/iio:device0/buffer0/watermark       -    -    -    -   5
+w     /sys/bus/iio/devices/iio:device0/trigger/current_trigger -    -    -    -   hx_sample
+w     /sys/bus/iio/devices/iio:device0/buffer/enable           -    -    -    -   1
+```
+
+**TODO** - adjust access rights for `/dev/iio:device0`
+
+Reboot.
