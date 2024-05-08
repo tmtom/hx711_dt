@@ -1,0 +1,30 @@
+/dts-v1/;
+/plugin/;
+
+/ {
+    compatible = "brcm,bcm2835";
+
+    fragment@0 {
+        target-path = "/";
+        __overlay__ {
+
+            // from https://raspberrypi.stackexchange.com/questions/103984/trouble-adding-a-gpio-device-to-the-device-tree/109715#109715
+            // The second “hx711” is the name we will see in /proc/device-tree/XXX/
+            hx711: hx711 {
+                compatible = "avia,hx711";
+                sck-gpios = <&gpio 23 0>;
+                dout-gpios = <&gpio 24 0>;
+                avdd-supply = <&vdd_3v3_reg>;
+                status = "okay";
+            };
+        };
+    };
+
+/*
+    __overrides__ {
+	gpiopin = <&fan0>,"gpios:4", <&fan0>,"brcm,pins:0";
+	temp = <&cpu_hot>,"temperature:0";
+	hyst = <&cpu_hot>,"hysteresis:0";
+    };
+*/
+};
