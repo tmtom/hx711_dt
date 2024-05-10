@@ -94,7 +94,7 @@ echo hx_sample > /sys/bus/iio/devices/iio:device0/trigger/current_trigger
 echo 1         > /sys/bus/iio/devices/iio:device0/buffer/enable
 ```
 
-If all went well the system should now sample hx711 on its own. You can check it for example using:
+If all went well the system should now sample hx711 on its own. You can check it for example using (note that you may need to change acess rights or run as root, also see below):
 ```bash
 cat /dev/iio\:device0 | hexdump
 ```
@@ -120,6 +120,17 @@ w     /sys/bus/iio/devices/iio:device0/trigger/current_trigger -    -    -    - 
 w     /sys/bus/iio/devices/iio:device0/buffer/enable           -    -    -    -   1
 ```
 
-**TODO** - adjust access rights for `/dev/iio:device0`
+#### Device access rights
+
+Create udev rule to add access rights to the bufferred device `/dev/iio:device0`.
+
+Create for example `/etc/udev/rules.d/90-hx711.rules` with this rule:
+```bash
+KERNEL=="iio:device[0-9]*", SUBSYSTEM=="iio", GROUP="iio", MODE="0660"
+```
+
+Assuming you have group `iio` and required users are in it.
 
 Reboot.
+
+Now after system start there should be device `/dev/iio:device0` with continuously updated values accessible by ordinary user.
